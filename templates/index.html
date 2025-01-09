@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Heart Failure Prediction</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/mystyle.css') }}">
+</head>
+<body>
+
+    <div class="container">
+    <h1>Heart Failure Prediction</h1>
+
+    <form action="/predict" method="POST">
+        <!-- Slider -->
+        <label for="slider">Age:</label>
+        <input type="range" id="slider" name="Age" class="slider" min="0" max="120" step="1" value="0">
+        <p>Age in years: <span id="sliderValue">0</span></p>
+
+        <!-- Dropdown 1 -->
+        <label for="dropdown1">Sex:</label>
+        <select id="dropdown1" name="Sex" class="dropdown">
+            <option value="M">Male</option>
+            <option value="F">Female</option>
+        </select>
+
+        <!-- Dropdown 2 -->
+        <label for="dropdown2">Chest Pain Type:</label>
+        <select id="dropdown2" name="ChestPainType" class="dropdown">
+            <option value="TA">Typical Angina</option>
+            <option value="ATA">Atypical Angina</option>
+            <option value="NAP">Non-Anginal</option>
+            <option value="ASY">Asymptomatic</option>
+        </select>
+
+        <div class="select-container">
+            <label for="floatInput">Resting Blood Pressure (Systolic) in mm Hg:</label>
+            <input type="number" id="floatInput1" name="RestingBP" step="any"  placeholder="e.g., 130" class="float-input" required>
+        </div>
+
+        <div class="select-container">
+            <label for="floatInput">Serum Cholesterol in mm/dl:</label>
+            <input type="number" id="floatInput2" name="Cholesterol" step="any"  placeholder="e.g., 200" class="float-input" required>
+        </div>
+
+        <!-- Dropdown 3 -->
+        <label for="dropdown3">Fasting Blood Sugar: Select 'Yes' if fasting blood sugar is greater than 120 mm/dl, otherwise select 'No'</label>
+        <select id="dropdown3" name="FastingBS" class="dropdown">
+            <option value="1">Yes</option>
+            <option value="0">No</option>
+        </select>
+
+        <!-- Dropdown 4 -->
+        <label for="dropdown4">Resting Electrocardiogram Result:</label>
+        <select id="dropdown4" name="RestingECG" class="dropdown">
+            <option value="Normal">Normal</option>
+            <option value="ST">Having ST-T wave abnormality (T wave inversions and/or ST elevation or depression of > 0.05 mV)</option>
+            <option value="LVH">Showing probable or definite left ventricular hypertrophy by Estes' criteria</option>
+        </select>
+
+        <div class="select-container">
+            <label for="floatInput">Maximum Heart Rate Achieved:</label>
+            <input type="number" id="floatInput" name="MaxHR" step="any" placeholder="e.g., 110" class="float-input" required>
+        </div>
+
+        <!-- Dropdown 5 -->
+        <label for="dropdown5">Exercise Induced Angina:</label>
+        <select id="dropdown5" name="ExerciseAngina" class="dropdown">
+            <option value="Y">Yes</option>
+            <option value="N">No</option>
+        </select>
+
+        <div class="select-container">
+            <label for="floatInput">Oldpeak (Measurement of the ST depression caused by exercise relative to rest):</label>
+            <input type="number" id="floatInput" name="Oldpeak" step="any" placeholder="e.g., 1.0" class="float-input" required>
+        </div>
+
+        <!-- Dropdown 6 -->
+        <label for="dropdown6">ST Slope (The slope of the peak exercise ST segment):</label>
+        <select id="dropdown6" name="ST_Slope" class="dropdown">
+            <option value="Up">Up or Upsloping</option>
+            <option value="Flat">Flat</option>
+            <option value="Down">Down or Downsloping</option>
+        </select>
+
+        <!-- Submit Button -->
+        <div class="select-container">
+            <button type="submit" class="submit-btn">Submit</button>
+        </div>
+
+    </form>
+    </div>
+
+    <script>
+        // Update the slider value display
+        const slider = document.getElementById("slider");
+        const sliderValue = document.getElementById("sliderValue");
+
+        slider.oninput = function() {
+            sliderValue.innerText = this.value;
+        }
+    </script>
+</body>
+</html>
