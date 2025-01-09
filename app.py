@@ -1,8 +1,19 @@
 from flask import Flask, url_for, redirect, render_template, request
 import pickle
 import numpy as np
+import subprocess
 
 app = Flask(__name__)
+
+initialized = False
+@app.before_request
+def run_model_script():
+    global initialized
+    if not initialized:
+        subprocess.run(['python','model.py'], check=True)
+        initialized = True
+
+run_model_script()
 
 model = pickle.load(open('model.pkl', 'rb'))
 scaler = pickle.load(open('scaler.pkl', 'rb'))
@@ -47,10 +58,10 @@ def predict():
     features_scaled = scaler.transform(features.reshape(1,18))
     
     # Prediction
-    value = model.predict_proba(features_scaled)
+    value = model.predict_proba(features_scaled)[0][0]*100
 
     # returns the response
-    return render_template('result.html', prediction = value[0][0]*100)
+    return render_template('result.html', prediction = round(value,2))
 
 
 if __name__ == '__main__':
