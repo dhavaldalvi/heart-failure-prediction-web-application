@@ -2,6 +2,15 @@
 
 This project is a **Heart Failure Prediction** web application built using **Flask** and **Python**. The goal of this web app is to predict the likelihood of heart failure based on various health-related factors using a trained machine learning model. Note that this model does not accurately predict the results, the main goal is to make web app using flask framework.
 
+## Example
+
+**Input:**
+
+![Screenshot of main page](https://github.com/dhavaldalvi/heart-failure-prediction-web-application/blob/main/screenshots/Index.JPG?raw=true)
+
+**Prediction:**
+
+![Screenshot of result page](https://github.com/dhavaldalvi/heart-failure-prediction-web-application/blob/main/screenshots/Result.JPG?raw=true)
 ---
 
 ## Features
@@ -141,13 +150,6 @@ The result will be displayed immediately, and it will indicate the predicted pro
 - **Machine Learning Algorithm**: A machine learning algorithm Random Forest was used to train the model.
 - **Model File**: The trained model is saved as a `.pkl` file.
 
----
-
-## Example
-
-**Input:**
-
-**Prediction:**
 
 
 
