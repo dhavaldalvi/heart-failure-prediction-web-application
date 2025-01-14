@@ -2,13 +2,11 @@ import pandas as pd
 from scipy import stats
 import numpy as np
 import pickle
-from sklearn.preprocessing import LabelBinarizer
 from sklearn.model_selection import train_test_split
-from sklearn.preprocessing import StandardScaler
 from sklearn.ensemble import RandomForestClassifier
-from sklearn.metrics import accuracy_score
-import warnings
-warnings.filterwarnings('ignore') 
+from sklearn.preprocessing import StandardScaler, OneHotEncoder, OrdinalEncoder
+from sklearn.compose import ColumnTransformer
+from sklearn.pipeline import Pipeline
 
 # Loading the data
 data = pd.read_csv("data/HeartFailurePredictionDataset.csv")
@@ -27,44 +25,31 @@ def remove_outlier(df_in, col_name):
 datadraft01 = remove_outlier(data, 'Cholesterol') 
 df = remove_outlier(datadraft01, 'RestingBP') 
 
-# Initializing the encoders for categorical features
-Sex = LabelBinarizer()
-ChestPainType = LabelBinarizer()
-RestingECG = LabelBinarizer()
-ExerciseAngina = LabelBinarizer()
-ST_Slope = LabelBinarizer()
-
-# Encoding the categorical features
-df['Sex'] = Sex.fit_transform(df['Sex'])
-df['ExerciseAngina'] = ExerciseAngina.fit_transform(df['ExerciseAngina'])
-df = df.join(pd.DataFrame(ChestPainType.fit_transform(df["ChestPainType"]), columns=ChestPainType.classes_, index=df.index))
-df = df.join(pd.DataFrame(RestingECG.fit_transform(df["RestingECG"]), columns=RestingECG.classes_, index=df.index))
-df = df.join(pd.DataFrame(ST_Slope.fit_transform(df["ST_Slope"]), columns=ST_Slope.classes_, index=df.index))
-
-# Finalized dataset for training
-final_df = df.drop(['ChestPainType', 'RestingECG', 'ST_Slope'], axis=1)
-
-# Splitting the dataset into training and testing sets
-X, y = final_df.drop(['HeartDisease'], axis = 1), final_df['HeartDisease']
+# Splitting dataset into training and testing dataset
+X, y = df.drop(['HeartDisease'], axis = 1), df['HeartDisease']
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 
-# Scaling the training set and fitting the testing set
-scaler = StandardScaler()
-scaler.fit(X_train)
-X_train = scaler.transform(X_train)
-X_test = scaler.transform(X_test)
+# Classifying ordinal and nominal categorical and numerical data 
+ordinal_cols = ['ST_Slope']
+nominal_cols = ['Sex', 'ChestPainType', 'RestingECG', 'ExerciseAngina']
+numerical_cols = ['Age', 'RestingBP', 'Cholesterol', 'FastingBS', 'MaxHR', 'Oldpeak']
+
+# Separately scaling and transforming the features 
+preprocessor = ColumnTransformer(
+    transformers=[
+        ('num', StandardScaler(), numerical_cols),  # Apply StandardScaler to numerical columns
+        ('ord', OrdinalEncoder(), ordinal_cols),    # Apply OrdinalEncoder to ordinal columns
+        ('nom', OneHotEncoder(), nominal_cols)      # Apply OneHotEncoder to nominal columns
+    ])
+
+# Making pipeline
+pipeline = Pipeline(steps=[
+    ('preprocessor', preprocessor),           # Apply the preprocessing
+    ('classifier', RandomForestClassifier())      # Train a classifier (e.g., Logistic Regression)
+])
 
 # Training the model
-forest = RandomForestClassifier()
-forest.fit(X_train, y_train)
-forest_prediction = forest.predict(X_test)
-forest_accuracy = (round(accuracy_score(forest_prediction, y_test), 4)*100)
-#print(f'Accuracy of the model is {forest_accuracy}')
+pipeline.fit(X_train, y_train)
 
-pickle.dump(forest, open('model.pkl', 'wb'))
-pickle.dump(Sex, open('feature_sex.pkl', 'wb'))
-pickle.dump(ExerciseAngina, open('feature_exerciseangina.pkl', 'wb'))
-pickle.dump(ChestPainType, open('feature_chestpain.pkl', 'wb'))
-pickle.dump(RestingECG, open('feature_restingecg.pkl', 'wb'))
-pickle.dump(ST_Slope, open('feature_stslope.pkl', 'wb'))
-pickle.dump(scaler, open('scaler.pkl', 'wb'))
+# Saving the model
+pickle.dump(pipeline, open('model.pkl', 'wb'))
